@@ -12,6 +12,9 @@ from tasks.edit_task import edit
 load_dotenv()
 print("✅ Environment variables loaded.")  # Debug log
 
+# ✅ Debug flag - set to True to test model API connection before running
+DEBUG_MODE = True
+
 # Define paths for better organization
 OUTPUT_FOLDER = "output"
 TEMPLATE_FOLDER = os.path.join(OUTPUT_FOLDER, "templates")
@@ -34,7 +37,8 @@ print(f"✅ Model selected: {model_choice}")
 
 # Get model and client
 try:
-    client, model = get_model(model_choice)
+    # ✅ Pass the debug flag to run test when DEBUG_MODE is enabled
+    client, model = get_model(model_choice, test=DEBUG_MODE)
     if model is None:
         raise ValueError("❌ ERROR: Model returned as None. Please check `get_model()` implementation.")
 except Exception as e:
