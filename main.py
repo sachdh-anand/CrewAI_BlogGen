@@ -12,7 +12,7 @@ from tasks.edit_task import edit
 load_dotenv()
 print("✅ Environment variables loaded.")  # Debug log
 
-# ✅ Debug flag - set to True to test model API connection before running
+# Debug flag - set to True to test model API connection before running
 DEBUG_MODE = True
 
 # Define paths for better organization
@@ -25,10 +25,14 @@ os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 os.makedirs(TEMPLATE_FOLDER, exist_ok=True)
 
 # Allowed model choices
-VALID_MODELS = ["mistral", "huggingface", "llama"]
+VALID_MODELS = ["mistral", "huggingface"]
 
-# Choose LLM model with validation
-model_choice = input("Choose LLM model (mistral / huggingface / llama): ").strip().lower()
+# Choose LLM model with validation and better description
+print("Choose LLM model:")
+print("- mistral    : Use Mistral AI API with your API key")
+print("- huggingface: Use Hugging Face API with various open-source models")
+model_choice = input("Enter your choice: ").strip().lower()
+
 if model_choice not in VALID_MODELS:
     print(f"❌ ERROR: Invalid model choice '{model_choice}'. Defaulting to 'mistral'.")
     model_choice = "mistral"
