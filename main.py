@@ -1,6 +1,6 @@
 import os
 import re
-import markdown  # ✅ Ensure Markdown is properly converted
+import markdown
 from dotenv import load_dotenv
 from models.llm import get_model
 from crewai import Crew
@@ -10,7 +10,7 @@ from tasks.edit_task import edit
 
 # Load environment variables
 load_dotenv()
-print("✅ Environment variables loaded.")  # Debug log
+print("✅ Environment variables loaded.")
 
 # Debug flag - set to True to test model API connection before running
 DEBUG_MODE = True
@@ -25,12 +25,13 @@ os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 os.makedirs(TEMPLATE_FOLDER, exist_ok=True)
 
 # Allowed model choices
-VALID_MODELS = ["mistral", "huggingface"]
+VALID_MODELS = ["mistral", "huggingface", "openai"]
 
 # Choose LLM model with validation and better description
 print("Choose LLM model:")
 print("- mistral    : Use Mistral AI API with your API key")
 print("- huggingface: Use Hugging Face API with various open-source models")
+print("- openai     : Use OpenAI API (GPT-3.5, GPT-4) with your API key")
 model_choice = input("Enter your choice: ").strip().lower()
 
 if model_choice not in VALID_MODELS:
@@ -41,15 +42,16 @@ print(f"✅ Model selected: {model_choice}")
 
 # Get model and client
 try:
-    # ✅ Pass the debug flag to run test when DEBUG_MODE is enabled
+    # Pass the debug flag to run test when DEBUG_MODE is enabled
     client, model = get_model(model_choice, test=DEBUG_MODE)
     if model is None:
-        raise ValueError("❌ ERROR: Model returned as None. Please check `get_model()` implementation.")
+        print("❌ ERROR: Failed to initialize any model. Please check API keys and try again.")
+        exit(1)
 except Exception as e:
     print(f"❌ ERROR: Failed to load model: {e}")
     exit(1)
 
-print(f"✅ Model initialized: {model}")  # Debug log
+print(f"✅ Model initialized: {model}")
 
 # Initialize CrewAI
 try:
@@ -58,7 +60,7 @@ try:
         tasks=[plan, write, edit],
         verbose=True
     )
-    print("✅ Crew initialized.")  # Debug log
+    print("✅ Crew initialized.")
 except Exception as e:
     print(f"❌ ERROR: Failed to initialize CrewAI: {e}")
     exit(1)
@@ -71,21 +73,38 @@ if not topic:
 
 print(f"✅ Topic received: {topic}")
 
-# ✅ Generate a safe filename based on the topic
+# Generate a safe filename based on the topic
 safe_topic = re.sub(r"[^\w\s-]", "", topic).strip().replace(" ", "_")
 output_filename = f"{safe_topic}.html"
 output_path = os.path.join(OUTPUT_FOLDER, output_filename)
 
 # Execute CrewAI workflow with error handling
 try:
-    result = crew.kickoff(inputs={"topic": topic})  # CrewAI generates output
+    result = crew.kickoff(inputs={"topic": topic})
     print("✅ CrewAI execution complete.")
 
     # Convert CrewOutput to Markdown string
-    result_text = str(result)  # ✅ Extract raw markdown text
+    result_text = str(result)
 
-    # ✅ Convert Markdown to HTML with fenced code blocks
-    html_content = markdown.markdown(result_text, extensions=["fenced_code"])
+    # Convert Markdown to HTML with better extension support
+    html_content = markdown.markdown(
+        result_text, 
+        extensions=[
+            "fenced_code",
+            "tables",
+            "sane_lists",
+            "nl2br",  # Convert newlines to <br>
+            "smarty",  # Smart quotes
+            "toc"  # Table of contents
+        ]
+    )
+
+    # Add some basic styling to improve appearance
+    html_content = f"""
+    <div class="content-container">
+        {html_content}
+    </div>
+    """
 
     # Load HTML template
     with open(TEMPLATE_FILE, "r", encoding="utf-8") as f:
