@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 from models.config.mistral import get_mistral_model, test_mistral_connection
 from models.config.huggingface import get_huggingface_model, test_huggingface_connection, list_recommended_models as list_hf_models
 from models.config.openai import get_openai_model, test_openai_connection, list_recommended_models as list_openai_models
+from models.config.openrouterai import get_openrouter_model, test_openrouter_connection, list_recommended_models as list_openrouter_models
 
 # Load environment variables
 load_dotenv()
@@ -13,7 +14,7 @@ def get_model(model_type="mistral", test=False):
     Falls back to Mistral if the selected model's connection test fails.
     
     Parameters:
-    - model_type: Type of model to use (mistral, huggingface, openai)
+    - model_type: Type of model to use (mistral, huggingface, openai, openrouterai)
     - test: If True, run a connection test before returning the model
     
     Returns:
@@ -75,6 +76,23 @@ def get_model(model_type="mistral", test=False):
         
         # Return the model
         return get_openai_model()
+    
+    elif model_type == "openrouterai":
+        # List recommended models if in test mode
+        if test:
+            list_openrouter_models()
+            test_result = test_openrouter_connection()
+            if not test_result:
+                print("⚠️ Warning: OpenRouter connection test failed.")
+                if mistral_viable:
+                    print("🔄 Falling back to Mistral API...")
+                    return get_model("mistral", test=True)
+                else:
+                    print("❌ Cannot fall back to Mistral API (key missing or invalid).")
+                    return None, None
+        
+        # Return the model
+        return get_openrouter_model()
     
     else:
         raise ValueError(f"❌ Unsupported model type: {model_type}")

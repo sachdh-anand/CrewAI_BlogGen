@@ -25,13 +25,14 @@ os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 os.makedirs(TEMPLATE_FOLDER, exist_ok=True)
 
 # Allowed model choices
-VALID_MODELS = ["mistral", "huggingface", "openai"]
+VALID_MODELS = ["mistral", "huggingface", "openai", "openrouterai"]
 
 # Choose LLM model with validation and better description
 print("Choose LLM model:")
 print("- mistral    : Use Mistral AI API with your API key")
 print("- huggingface: Use Hugging Face API with various open-source models")
 print("- openai     : Use OpenAI API (GPT-3.5, GPT-4) with your API key")
+print("- openrouterai: Use OpenRouter AI API with various free models")
 model_choice = input("Enter your choice: ").strip().lower()
 
 if model_choice not in VALID_MODELS:
