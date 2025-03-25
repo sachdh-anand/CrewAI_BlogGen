@@ -87,7 +87,7 @@ The system will automatically:
 
 ### Sample Output
 
-Here's an example of the AI-generated content on "QA Transformation using AI":
+Here's an example of the AI-generated content on "AI in healthcare":
 
 ![Sample Blog Output](assets/Blog_output.png)
 
