@@ -89,7 +89,7 @@ The system will automatically:
 
 Here's an example of the AI-generated content on "QA Transformation using AI":
 
-![Sample Blog Output](assets/qa_transformation.png)
+![Sample Blog Output](assets/Blog_output.png)
 
 The system generates well-structured blog posts with:
 - Clear section hierarchy
